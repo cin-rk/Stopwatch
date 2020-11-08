@@ -1,0 +1,77 @@
+Index: app/src/main/java/com/example/stopwatch/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/stopwatch/MainActivity.kt	(date 1597924959679)
++++ app/src/main/java/com/example/stopwatch/MainActivity.kt	(date 1597924959679)
+@@ -0,0 +1,69 @@
++package com.example.stopwatch
++
++import androidx.appcompat.app.AppCompatActivity
++import android.os.Bundle
++import android.os.Handler
++import android.widget.Button
++import android.widget.TextView
++
++class MainActivity : AppCompatActivity() {
++
++    val handler = Handler()
++    var timeValue = 0
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.activity_main)
++
++        // View要素を変数に代入
++        val timeText = findViewById(R.id.timeText) as TextView
++        val startButton = findViewById(R.id.START) as Button
++        val stopButton = findViewById(R.id.STOP) as Button
++        val resetButton = findViewById(R.id.RESET) as Button
++
++        // 1秒ごとに処理を実行
++        val runnable = object : Runnable {
++            override fun run () {
++                timeValue++
++
++                timeToText(timeValue)?.let {
++                    timeText.text = it
++                }
++                handler.postDelayed(this, 1000)
++            }
++        }
++
++     //　ボタン押した時の処理
++        //　start
++        startButton.setOnClickListener {
++            handler.post(runnable)
++        }
++
++        //　stop
++        stopButton.setOnClickListener {
++            handler.removeCallbacks(runnable)
++        }
++
++        //　reset
++        resetButton.setOnClickListener{
++            handler.removeCallbacks(runnable)
++            timeValue= 0
++            timeToText()?.let {
++                timeText.text = it
++            }
++        }
++    }
++
++    private fun timeToText(time: Int = 0): String? {
++        return if (time < 0) {
++            null
++        } else if (time == 0) {
++            "00:00:00"
++        } else {
++            val h = time / 3600
++            val m = time % 3600 / 60
++            val s = time % 60
++            "%1$02d:%2$02d:%3$02d".format(h,m,s)
++        }
++    }
++}
